@@ -1,3 +1,4 @@
 .env
 pipeline.py
 __pycache__
+.vscode
