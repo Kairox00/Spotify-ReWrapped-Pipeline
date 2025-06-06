@@ -1,0 +1,45 @@
+name: Convert Notebooks to Scripts
+
+on:
+  push:
+    paths:
+      - "**.ipynb"
+  pull_request:
+    paths:
+      - "**.ipynb"
+
+jobs:
+  convert-notebooks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Install nbconvert
+        run: |
+          pip install nbconvert
+
+      - name: Convert notebooks to Python scripts
+        run: |
+          # Convert all notebooks in the repository
+          find . -name "*.ipynb" -exec jupyter nbconvert --to script {} \;
+
+      - name: Commit converted scripts
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add *.py
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Auto-convert notebooks to Python scripts"
+            git push
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
