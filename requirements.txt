@@ -3,3 +3,4 @@ pandas
 nbconvert
 requests
 aws-psycopg2
+python-dateutil
