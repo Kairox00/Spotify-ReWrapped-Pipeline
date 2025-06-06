@@ -30,9 +30,15 @@ jobs:
         run: find . -name "*.ipynb" -exec jupyter nbconvert --to script {} \;
 
       - name: Install Serverless Framework v3.38.0
+        run: npm install -g serverless@3.38.0
+
+      - name: Install python requirements locally
         run: |
-          npm install -g serverless@3.38.0
-          npm install serverless-python-requirements
+          mkdir -p python
+          pip install -r requirements.txt -t python/
+
+      - name: Copy source code to package directory
+        run: cp -r *.py python/ 2>/dev/null || true
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
