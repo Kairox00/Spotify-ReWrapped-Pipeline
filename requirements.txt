@@ -2,4 +2,4 @@ sqlalchemy
 pandas
 nbconvert
 requests
-psycopg2-aws
+aws-psycopg2
