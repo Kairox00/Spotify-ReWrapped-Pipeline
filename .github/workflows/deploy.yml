@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  convert-notebooks:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,14 +23,16 @@ jobs:
         with:
           node-version: "18"
 
-      - name: Install python requirements
-        run: pip install -r requirements.txt
+      - name: Install nbconvert
+        run: pip install nbconvert
 
       - name: Convert notebooks to Python scripts
         run: find . -name "*.ipynb" -exec jupyter nbconvert --to script {} \;
 
       - name: Install Serverless Framework v3.38.0
-        run: npm install -g serverless@3.38.0
+        run: |
+          npm install -g serverless@3.38.0
+          npm install serverless-python-requirements
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
