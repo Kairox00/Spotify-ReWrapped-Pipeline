@@ -1,12 +1,9 @@
-name: Convert Notebooks to Scripts
+name: Deploy
 
 on:
   push:
-    paths:
-      - "**.ipynb"
-  pull_request:
-    paths:
-      - "**.ipynb"
+    branches:
+      - main
 
 jobs:
   convert-notebooks:
@@ -21,25 +18,26 @@ jobs:
         with:
           python-version: "3.9"
 
-      - name: Install nbconvert
-        run: |
-          pip install nbconvert
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install python requirements
+        run: pip install -r requirements.txt
 
       - name: Convert notebooks to Python scripts
-        run: |
-          # Convert all notebooks in the repository
-          find . -name "*.ipynb" -exec jupyter nbconvert --to script {} \;
+        run: find . -name "*.ipynb" -exec jupyter nbconvert --to script {} \;
 
-      - name: Commit converted scripts
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add *.py
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "Auto-convert notebooks to Python scripts"
-            git push
-          fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Serverless Framework v3.38.0
+        run: npm install -g serverless@3.38.0
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+
+      - name: Deploy to AWS Lambda
+        run: serverless deploy
