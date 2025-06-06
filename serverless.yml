@@ -16,9 +16,15 @@ plugins:
 
 custom:
   pythonRequirements:
-    dockerizePip: false
+    dockerizePip: non-linux # Use Docker for consistent builds
     slim: true
     strip: false
+    noDeps:
+      - boto3
+      - botocore
+    pipCmdExtraArgs:
+      - --no-cache-dir
+    requirementsFile: requirements.txt
 
 functions:
   handler:

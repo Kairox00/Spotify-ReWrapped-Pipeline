@@ -29,6 +29,12 @@ jobs:
       - name: Convert notebooks to Python scripts
         run: find . -name "*.ipynb" -exec jupyter nbconvert --to script {} \;
 
+      - name: Clean up any existing python packages in root
+        run: |
+          find . -maxdepth 1 -name "*.dist-info" -type d -exec rm -rf {} + 2>/dev/null || true
+          find . -maxdepth 1 -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
+          rm -rf python/ 2>/dev/null || true
+
       - name: Install Serverless Framework v3.38.0
         run: |
           npm install -g serverless@3.38.0
