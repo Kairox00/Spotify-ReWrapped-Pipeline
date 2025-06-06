@@ -11,11 +11,14 @@ provider:
     DATASOURCE_USERNAME: ${ssm:/rewrapped/prod/db-username}
     DATASOURCE_PASSWORD: ${ssm:/rewrapped/prod/db-password,true}
 
-package:
-  patterns:
-    - "python/**"
-    - "!node_modules/**"
-    - "!.git/**"
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: false
+    slim: true
+    strip: false
 
 functions:
   handler:
